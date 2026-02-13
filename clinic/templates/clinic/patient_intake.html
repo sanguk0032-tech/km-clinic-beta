@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ template.name }} - {{ patient.full_name }}</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 20px; line-height: 1.4; }
+    .card { max-width: 720px; margin: 0 auto; padding: 16px; border: 1px solid #ddd; border-radius: 12px; }
+    .row { margin: 12px 0; }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 10px; }
+    button { width: 100%; padding: 12px; border: 0; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    .hint { color: #666; font-size: 12px; margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>{{ template.name }} (v{{ template.version }})</h2>
+    <p><b>환자:</b> {{ patient.full_name }}</p>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% for f in fields %}
+        <div class="row">
+          <label for="{{ f.key }}">{{ f.label }}</label>
+
+          {% if f.type == "text" %}
+            <textarea id="{{ f.key }}" name="{{ f.key }}" rows="3" placeholder="입력"></textarea>
+          {% else %}
+            <input
+              id="{{ f.key }}"
+              name="{{ f.key }}"
+              type="{% if f.type == 'number' %}number{% else %}text{% endif %}"
+              {% if f.min is not None %}min="{{ f.min }}"{% endif %}
+              {% if f.max is not None %}max="{{ f.max }}"{% endif %}
+              step="any"
+              placeholder="입력"
+            />
+          {% endif %}
+
+          {% if f.unit %}
+            <div class="hint">단위: {{ f.unit }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <button type="submit">제출</button>
+    </form>
+
+    <p class="hint">※ 현재는 테스트용 화면입니다. 실제 운영 전에는 초대코드/로그인/접근통제를 붙이는 것을 권장합니다.</p>
+  </div>
+</body>
+</html>

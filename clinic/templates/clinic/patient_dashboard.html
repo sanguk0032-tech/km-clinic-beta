@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>환자 대시보드</title>
+  <style>
+    body { font-family: Arial; margin:20px; }
+    .card { border:1px solid #ddd; border-radius:10px; padding:10px; margin:10px 0; }
+    .label { font-size:12px; color:#666; }
+    .value { font-size:20px; font-weight:bold; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; }
+    th, td { border-bottom:1px solid #eee; padding:8px; text-align:left; }
+  </style>
+</head>
+<body>
+
+<h2>환자 대시보드 - {{ patient.full_name }}</h2>
+
+{% for code, obs in latest.items %}
+  <div class="card">
+    <div class="label">{{ code }}</div>
+    <div class="value">
+      {% if obs %}
+        {% if obs.value_num is not None %}
+          {{ obs.value_num }}
+        {% else %}
+          {{ obs.value_text }}
+        {% endif %}
+        {% if obs.unit %} {{ obs.unit }}{% endif %}
+      {% else %}
+        -
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+
+<h3>최근 기록</h3>
+
+<table>
+  <tr>
+    <th>시간</th>
+    <th>항목</th>
+    <th>값</th>
+    <th>출처</th>
+  </tr>
+
+  {% for r in recent %}
+  <tr>
+    <td>{{ r.recorded_at|date:"Y-m-d H:i" }}</td>
+    <td>{{ r.label }}</td>
+    <td>
+      {% if r.value_num is not None %}
+        {{ r.value_num }}
+      {% else %}
+        {{ r.value_text }}
+      {% endif %}
+      {% if r.unit %} {{ r.unit }}{% endif %}
+    </td>
+    <td>{{ r.source }}</td>
+  </tr>
+  {% empty %}
+  <tr>
+    <td colspan="4">데이터가 없습니다.</td>
+  </tr>
+  {% endfor %}
+</table>
+
+</body>
+</html>

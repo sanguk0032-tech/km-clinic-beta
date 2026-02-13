@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>타임라인 - {{ patient.full_name }}</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; margin: 20px; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .card { margin-top: 14px; border:1px solid #e5e5e5; border-radius:14px; overflow:hidden; }
+    .row { display:flex; gap:14px; padding:12px 14px; border-top:1px solid #f0f0f0; }
+    .row:first-child { border-top:0; }
+    .dt { width:190px; color:#666; font-size:13px; }
+    .main { flex:1; }
+    .title { font-weight:700; margin-bottom:6px; }
+    details { margin-top:8px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h2>환자 타임라인 - {{ patient.full_name }}</h2>
+
+    <div class="card">
+      {% for it in items %}
+        <div class="row">
+          <div class="dt">{{ it.dt|date:"Y-m-d H:i" }}</div>
+          <div class="main">
+            <div class="title">
+              {% if it.type == "encounter" %}🩺{% endif %}
+              {% if it.type == "form" %}📝{% endif %}
+              {% if it.type == "attachment" %}📎{% endif %}
+              {{ it.title }}
+            </div>
+
+            {% if it.type == "encounter" %}
+              메모: {{ it.obj.note|default:"-" }}
+
+            {% elif it.type == "attachment" %}
+              {% if it.obj.file %}
+                파일: <a href="{{ it.obj.file.url }}" target="_blank">{{ it.obj.file.name }}</a>
+              {% endif %}
+
+            {% elif it.type == "form" %}
+              <details>
+                <summary>응답 보기</summary>
+                <div>{{ it.rendered_html|safe }}</div>
+              </details>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</body>
+</html>
