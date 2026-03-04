@@ -52,6 +52,12 @@ def render_response_table(template, answers):
     )
 
 
+
+
+# ===== 운영 확인 =====
+def healthz(request: HttpRequest) -> JsonResponse:
+    return JsonResponse({"status": "ok", "now": timezone.now().isoformat()})
+
 # ===== 환자 입력 페이지 =====
 def patient_intake(request: HttpRequest, patient_id: int) -> HttpResponse:
     patient = get_object_or_404(Patient, id=patient_id)
